@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Assembly bench</title>
+</head>
+<body>
+    <button id="start_wasm">start wasm</button>
+    <button id="start_js">start js</button>
+    <div>
+        <span>Wasm Result:</span>
+        <span id="wasm_result"></span>
+    </div>
+    <div>
+        <span>JS Result:</span>
+        <span id="js_result"></span>
+    </div>
+    <script src="./js/loader.js"></script>
+    <script>
+    (async function() {
+        const startWasmButton = document.getElementById('start_wasm');
+        const startJsButton = document.getElementById('start_js');
+        startWasmButton.onclick = benchWasm;
+        startJsButton.onclick = benchJs;
+        const WL = new WasmLoader();
+        const wasmResultSpan = document.getElementById('wasm_result')
+        const jsResultSpan = document.getElementById('js_result')
+        
+        const numberInterations = 40;
+
+        const {fibonacci} = await WL.load('./build/optimized.wasm').then();
+
+        function benchWasm () {
+            console.log('wasm bench started')
+            var startTime = performance.now()
+            let result = fibonacci(numberInterations);
+            result = fibonacci(numberInterations);
+            result = fibonacci(numberInterations);
+            result = fibonacci(numberInterations);
+            result = fibonacci(numberInterations);
+            var endTime = performance.now()
+            const time = endTime - startTime
+            wasmResultSpan.innerHTML = `${result} (took ${time})`
+        }
+        function fib(sequenceFor) {
+            if (sequenceFor <= 1) return 1;
+            return fibonacci(sequenceFor - 1) + fibonacci(sequenceFor - 2);
+        }
+        function benchJs() {
+            console.log('js bench started')
+            var startTime = performance.now()
+            let res = fib(numberInterations);
+            res = fib(numberInterations);
+            res = fib(numberInterations);
+            res = fib(numberInterations);
+            res = fib(numberInterations);
+            var endTime = performance.now()
+            const time = endTime - startTime
+            jsResultSpan.innerHTML = `${res} (took ${time})`
+        }
+    })()
+
+    </script>
+</body>
+</html>
